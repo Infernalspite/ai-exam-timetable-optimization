@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Algorithms — Exam Scheduler</title>
+<link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="index.html">Exam Scheduler<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="algorithms.html" class="current">Algorithms</a>
+      <a href="scheduler.html">Live Scheduler</a>
+      <a href="reference.html">Reference</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-head">
+  <h1>The algorithms, measured live</h1>
+  <p class="sub">Each card runs real instrumented code on a synthetic semester — no canned numbers. Re-run any time; the seed keeps it reproducible.</p>
+</section>
+
+<main class="section" style="margin-top:18px;">
+
+  <div class="controls" style="margin-bottom:6px;">
+    <label>Courses <input type="number" id="inCourses" value="60" min="10" max="400" step="10"></label>
+    <label>Students <input type="number" id="inStudents" value="800" min="100" max="8000" step="100"></label>
+    <label>Seed <input type="number" id="inSeed" value="20260731" min="1" max="999999999"></label>
+    <label class="checkbox"><input type="checkbox" id="inAdversarial"> Adversarial input (pre-sorted)</label>
+    <button id="btnRun">↻ Re-run measurements</button>
+  </div>
+
+  <div class="algo-grid">
+
+    <div class="algo-card tint-blue">
+      <h3>① Randomized Primality Testing — Miller–Rabin</h3>
+      <p class="algo-desc">
+        The conflict hash table is sized to a <b>prime</b> so keys scatter evenly. Miller–Rabin tests
+        random witnesses: fail a single round → definitely composite; pass all k rounds → prime with
+        error ≤ 4<sup>−k</sup>. Polynomial time, tiny error — the textbook trade.
+      </p>
+      <div class="stat-row" id="mrStats"></div>
+      <div class="log" id="mrLog"></div>
+    </div>
+
+    <div class="algo-card tint-pink">
+      <h3>② Randomized QuickSort — by conflict-degree</h3>
+      <p class="algo-desc">
+        A random pivot, a partition, two recursive calls. Expected <b>O(n log n)</b> regardless of
+        input order. Tick <i>adversarial input</i> to pre-sort by conflict-degree — a fixed
+        first-element pivot collapses toward O(n²) while the random pivot shrugs.
+      </p>
+      <div class="stat-row" id="qsStats"></div>
+      <div class="log" id="qsTrace"></div>
+    </div>
+
+    <div class="algo-card tint-mint">
+      <h3>③ Randomized Select — the K most conflict-heavy courses</h3>
+      <p class="algo-desc">
+        QuickSelect partitions like QuickSort but recurses into <b>one side only</b>: expected
+        <b>O(n)</b> to find the Kth smallest — versus O(n log n) to sort everything when you only
+        need the top handful.
+      </p>
+      <div class="stat-row" id="qselStats"></div>
+      <div class="log" id="qselTrace"></div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>The conflict graph <span class="hint">top-K most constrained courses · edge labels = shared students</span></h2>
+    <div class="graph-wrap">
+      <svg id="graphSvg" viewBox="0 0 900 380" role="img" aria-label="Course conflict graph"></svg>
+      <p class="caption" id="graphCaption">Run the measurements to build the graph.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <a href="scheduler.html">Ready to see these drive a real timetable? → Live Scheduler</a>
+</footer>
+
+<script src="js/rng.js?v=3"></script>
+<script src="js/primality.js?v=3"></script>
+<script src="js/hashtable.js?v=3"></script>
+<script src="js/quicksort.js?v=3"></script>
+<script src="js/quickselect.js?v=3"></script>
+<script src="js/coloring.js?v=3"></script>
+<script src="js/scheduler.js?v=3"></script>
+<script src="js/render.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
+</body>
+</html>

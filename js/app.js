@@ -108,6 +108,44 @@ function buildConflictGraph(courses, rng, mrRounds) {
 
 function tick() { return new Promise((r) => setTimeout(r, 30)); }
 
+// Shared setup for both pages: dataset + graph + sort + select measurements.
+function runAlgorithmsPipeline(rng, adversarial) {
+  const nCourses = +document.getElementById('inCourses').value;
+  const nStudents = +document.getElementById('inStudents').value;
+  const courses = generateDataset(nCourses, nStudents, rng, false);
+  const graph = buildConflictGraph(courses, rng, 6);
+  const degKey = (c) => c.degree;
+  if (adversarial) {
+    courses.sort((a, b) => a.degree - b.degree || (a.code < b.code ? -1 : 1));
+  }
+  const qsResult = sortByConflictDegree(courses, degKey, rng);
+  const fixed = fixedPivotQuickSort(courses.slice(), degKey);
+  const K = Math.max(1, Math.min(10, Math.floor(nCourses / 6)));
+  const top = topK(courses, K, degKey, rng);
+  return { courses, graph, qsResult, fixed, K, top, nCourses };
+}
+
+// Algorithms page: measurements + logs + graph, no AI stage.
+async function runAlgorithmsDemo() {
+  const btn = document.getElementById('btnRun');
+  btn.disabled = true;
+  try {
+    const seed = +document.getElementById('inSeed').value;
+    const adversarial = document.getElementById('inAdversarial').checked;
+    const rng = makeRng(seed);
+    const t = runAlgorithmsPipeline(rng, adversarial);
+    renderMRPanel(t.graph.byCode);
+    renderQSPanel(t.qsResult.sorted, t.qsResult.stats, t.fixed, adversarial);
+    renderQSelPanel(t.top, t.K, t.nCourses);
+    renderGraph(document.getElementById('graphSvg'), t.courses, t.graph.adj, null, t.top.items.map((c) => c.idx));
+    document.getElementById('graphCaption').textContent =
+      'Top-' + t.K + ' most constrained courses · ' + t.graph.edgeCount + ' conflict edges · edge labels = shared students';
+  } catch (e) {
+    console.error(e);
+  }
+  btn.disabled = false;
+}
+
 async function runPipeline() {
   const btn = document.getElementById('btnRun');
   btn.disabled = true;
@@ -116,7 +154,8 @@ async function runPipeline() {
     const nStudents = +document.getElementById('inStudents').value;
     const numSlots = +document.getElementById('inSlots').value;
     const seed = +document.getElementById('inSeed').value;
-    const adversarial = document.getElementById('inAdversarial').checked;
+    const advEl = document.getElementById('inAdversarial');
+    const adversarial = !!(advEl && advEl.checked);
     const refiner = document.getElementById('inRefiner').value;
     document.getElementById('refinerName').textContent =
       refiner === 'ga' ? 'Genetic Algorithm' : 'Simulated Annealing';
@@ -184,27 +223,39 @@ async function runPipeline() {
     renderMRPanel(pt);
     renderQSPanel(qsResult.sorted, qsResult.stats, fixed, adversarial);
     renderQSelPanel(top, K, nCourses);
-    renderGraph(
-      document.getElementById('graphSvg'),
-      courses, graph.adj, slotOfFinal, top.items.map((c) => c.idx)
-    );
-    document.getElementById('graphCaption').textContent =
-      'Top-' + K + ' most constrained courses · ' + graph.edgeCount +
-      ' conflict edges · node color = assigned slot (graph coloring)';
+    const graphSvg = document.getElementById('graphSvg');
+    if (graphSvg) {
+      renderGraph(graphSvg, courses, graph.adj, slotOfFinal, top.items.map((c) => c.idx));
+      const cap = document.getElementById('graphCaption');
+      if (cap) {
+        cap.textContent = 'Top-' + K + ' most constrained courses · ' + graph.edgeCount +
+          ' conflict edges · node color = assigned slot (graph coloring)';
+      }
+    }
     renderChart(document.getElementById('convChart'), aiResult.history);
     renderTimetable(document.getElementById('timetable'), courses, slotOfFinal, numSlots);
     renderFinalChecks(conflictsFinal, slotOfFinal, numSlots);
     renderAIStats(aiResult, conflictsFinal, colored.unassigned);
 
-    const totalMs = (performance.now() - t0).toFixed(1);
-    document.getElementById('aiLog').innerHTML =
-      '&gt; pipeline complete in ' + totalMs + ' ms' +
-      '<br>&gt; greedy left ' + colored.unassigned + ' course(s) unplaced; AI layer resolved them';
+    const aiLog = document.getElementById('aiLog');
+    if (aiLog) {
+      const totalMs = (performance.now() - t0).toFixed(1);
+      aiLog.innerHTML =
+        '&gt; pipeline complete in ' + totalMs + ' ms' +
+        '<br>&gt; greedy left ' + colored.unassigned + ' course(s) unplaced; AI layer resolved them';
+    }
   } catch (e) {
     console.error(e);
   }
   btn.disabled = false;
 }
 
-document.getElementById('btnRun').addEventListener('click', runPipeline);
-window.addEventListener('load', runPipeline);
+const btnRun = document.getElementById('btnRun');
+if (btnRun) btnRun.addEventListener('click', () => {
+  if (document.getElementById('stage1')) runPipeline();
+  else runAlgorithmsDemo();
+});
+window.addEventListener('load', () => {
+  if (document.getElementById('stage1')) runPipeline();
+  else if (document.getElementById('graphSvg') && document.getElementById('mrLog')) runAlgorithmsDemo();
+});

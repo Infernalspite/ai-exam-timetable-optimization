@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference — Exam Scheduler</title>
+<link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="index.html">Exam Scheduler<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="algorithms.html">Algorithms</a>
+      <a href="scheduler.html">Live Scheduler</a>
+      <a href="reference.html" class="current">Reference</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-head">
+  <h1>Reference</h1>
+  <p class="sub">Complexities tied to each algorithm's role, the demo script, and the people behind it.</p>
+</section>
+
+<main class="section" style="margin-top:18px;">
+
+  <div class="panel">
+    <h2>Unit V — complexity summary</h2>
+    <table class="cx-table">
+      <thead>
+        <tr><th>Randomized algorithm</th><th>Role in this scheduler</th><th>Best</th><th>Average (expected)</th><th>Worst</th><th>Reliability</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Randomized QuickSort</td>
+          <td>Sorts courses by conflict-degree so constrained courses are placed first</td>
+          <td>Ω(n log n)</td><td class="good">O(n log n)</td><td>O(n²) — probability → 0</td>
+          <td>Input-order independent in expectation</td>
+        </tr>
+        <tr>
+          <td>Randomized Select (QuickSelect)</td>
+          <td>“Top-K most constrained courses”, “K least-loaded slots” without full sort</td>
+          <td>Ω(n)</td><td class="good">O(n)</td><td>O(n²) — probability → 0</td>
+          <td>Beats full sort whenever K ≪ n</td>
+        </tr>
+        <tr>
+          <td>Miller–Rabin primality test</td>
+          <td>Verifies prime hash-table sizes for O(1) conflict lookups</td>
+          <td colspan="2" class="good">O(k · log³ n) — polynomial</td>
+          <td>Deterministic factoring: exponential</td>
+          <td>One-sided error ≤ 4<sup>−k</sup> (false “prime” only)</td>
+        </tr>
+        <tr>
+          <td>Greedy coloring <span class="hint">(deterministic harness)</span></td>
+          <td>First-fit initial timetable on the QuickSort order</td>
+          <td colspan="3">O(V + E) per pass</td>
+          <td>Guaranteed conflict-free <i>if colors suffice</i></td>
+        </tr>
+        <tr>
+          <td>Genetic Algorithm / Simulated Annealing <span class="hint">(AI layer)</span></td>
+          <td>Repairs tight instances: unassigned courses, residual conflicts, load balance</td>
+          <td colspan="3">Empirical — population × generations / iterations</td>
+          <td>Anytime: better schedules over time</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>Recorded-demo script <span class="hint">matches a 5-minute video, section by section</span></h2>
+    <ol class="demo-list">
+      <li><b>Open the Live Scheduler</b> and run with defaults (60 courses, 800 students, 12 slots) — all four stages light up; the result panel shows 0 hard conflicts.</li>
+      <li><b>Point at stage 1's metric:</b> prime table size 83 gives 10 collisions while a power-of-2 table needs 36 — that is “why prime sizes” in one glance.</li>
+      <li><b>Switch to Algorithms</b>, tick <i>Adversarial input</i>, re-run: the fixed-pivot QuickSort balloons to ~4× comparisons; the randomized pivot barely moves.</li>
+      <li><b>Same page:</b> QuickSelect finds the top-10 most constrained courses with roughly a third of a full sort's comparisons.</li>
+      <li><b>Back to Live Scheduler,</b> switch the refiner to <i>Simulated Annealing</i>, re-run — it also converges to zero conflicts.</li>
+      <li><b>Close on the Reference page</b> — this complexity table — and link the GitHub repo.</li>
+    </ol>
+  </div>
+
+  <div class="panel">
+    <h2>Project structure</h2>
+    <div class="log" style="max-height:none;">
+&gt; index.html · algorithms.html · scheduler.html · reference.html &nbsp;<span class="dim">— the four pages</span><br>
+&gt; styles.css &nbsp;<span class="dim">— the cream / sky / blush pastel theme</span><br>
+&gt; js/rng.js &nbsp;<span class="dim">— seeded RNG (mulberry32), reproducible runs</span><br>
+&gt; js/primality.js &nbsp;<span class="dim">— Miller–Rabin, BigInt-safe modular arithmetic</span><br>
+&gt; js/hashtable.js &nbsp;<span class="dim">— chain tables, prime vs power-of-2 sizing</span><br>
+&gt; js/quicksort.js &nbsp;<span class="dim">— randomized QuickSort + fixed-pivot comparator</span><br>
+&gt; js/quickselect.js &nbsp;<span class="dim">— randomized Select, topK / bottomK</span><br>
+&gt; js/coloring.js &nbsp;<span class="dim">— greedy graph coloring + conflict counters</span><br>
+&gt; js/scheduler.js &nbsp;<span class="dim">— GA &amp; simulated annealing with Kempe swaps</span><br>
+&gt; js/render.js &nbsp;<span class="dim">— all rendering: graph, chart, timetable, logs</span><br>
+&gt; js/app.js &nbsp;<span class="dim">— dataset generation + page-aware pipeline</span><br>
+&gt; js/home.js &nbsp;<span class="dim">— the little hero graph on the home page</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Credits</h2>
+    <div class="credit-card">
+      <div class="name">Taarunya Giriraj</div>
+      <div class="meta">
+        GitHub: <a href="https://github.com/taarunyeahhh">@taarunyeahhh</a> ·
+        <a href="mailto:taarunyagiriraj.aids2025@citchennai.net">taarunyagiriraj.aids2025@citchennai.net</a><br>
+        AIDS 2025 · Chennai Institute of Technology ·
+        Design and Analysis of Algorithms — Unit V: Randomized Algorithms
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://github.com/Infernalspite/ai-exam-timetable-optimization">GitHub — Infernalspite/ai-exam-timetable-optimization</a>
+</footer>
+
+</body>
+</html>

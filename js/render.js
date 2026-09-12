@@ -2,9 +2,9 @@
 'use strict';
 
 const SLOT_COLORS = [
-  '#4da3ff', '#43d17c', '#ffb454', '#ff5d73', '#b57bff', '#3dd6c3',
-  '#ff9e64', '#7bd88f', '#e0af68', '#61b3ff', '#c792ea', '#89ddff',
-  '#f07178', '#a6e3a1', '#f9e2af', '#94e2d5'
+  '#a9c4e8', '#a8dcc0', '#f6d3a7', '#f3b3c2', '#c9bce8', '#9adfd2',
+  '#f4c39a', '#c2e2a4', '#ecd9a0', '#9fc6ef', '#dcbce8', '#a3d8e8',
+  '#eeb0b8', '#cce4ae', '#efe3ac', '#ace0d6'
 ];
 
 function stat(label, value) {
@@ -18,6 +18,7 @@ function setStage(i, state) {
 }
 
 function renderMRPanel(pt) {
+  if (!document.getElementById('mrStats')) return;
   const primeSize = pt.primeSize;
   const rounds = pt.primeLog;
   const el = document.getElementById('mrStats');
@@ -46,6 +47,7 @@ function renderMRPanel(pt) {
 }
 
 function renderQSPanel(sorted, stats, fixedStats, adversarial) {
+  if (!document.getElementById('qsStats')) return;
   document.getElementById('qsStats').innerHTML =
     stat('Courses sorted (n)', sorted.length) +
     stat('Randomized comparisons', stats.comparisons) +
@@ -62,6 +64,7 @@ function renderQSPanel(sorted, stats, fixedStats, adversarial) {
 }
 
 function renderQSelPanel(top, k, n) {
+  if (!document.getElementById('qselStats')) return;
   document.getElementById('qselStats').innerHTML =
     stat('K (most constrained)', k) +
     stat('n (all courses)', n) +
@@ -91,38 +94,39 @@ function renderGraph(svg, courses, adj, slotOf, topIdx) {
       if (m && nb > n.idx) {
         edges += '<line x1="' + n.x.toFixed(1) + '" y1="' + n.y.toFixed(1) +
           '" x2="' + m.x.toFixed(1) + '" y2="' + m.y.toFixed(1) +
-          '" stroke="#2a3c5c" stroke-width="1.5"/>';
+          '" stroke="#dfd4c3" stroke-width="1.5"/>';
         const shared = courses[n.idx].students.filter((s) =>
           courses[nb].students.indexOf(s) >= 0).length;
         edges += '<text x="' + ((n.x + m.x) / 2).toFixed(1) + '" y="' + ((n.y + m.y) / 2 - 4).toFixed(1) +
-          '" text-anchor="middle" font-size="9" fill="#5c718c">' + shared + '</text>';
+          '" text-anchor="middle" font-size="9" fill="#a39a86">' + shared + '</text>';
       }
     });
   });
   let dots = '';
   nodes.forEach((n) => {
     const s = slotOf ? slotOf[n.idx] : -1;
-    const color = s >= 0 ? SLOT_COLORS[s % SLOT_COLORS.length] : '#555f70';
+    const color = s >= 0 ? SLOT_COLORS[s % SLOT_COLORS.length] : '#c4bcab';
     dots += '<circle cx="' + n.x.toFixed(1) + '" cy="' + n.y.toFixed(1) +
-      '" r="16" fill="' + color + '" fill-opacity="0.25" stroke="' + color + '" stroke-width="2"/>';
+      '" r="16" fill="' + color + '" fill-opacity="0.45" stroke="' + color + '" stroke-width="2.5"/>';
     dots += '<text x="' + n.x.toFixed(1) + '" y="' + (n.y + 4).toFixed(1) +
-      '" text-anchor="middle" font-size="10" fill="#dce6f5" font-family="Consolas,monospace">' +
+      '" text-anchor="middle" font-size="10" fill="#38312a" font-family="Consolas,monospace">' +
       courses[n.idx].code + '</text>';
     dots += '<text x="' + n.x.toFixed(1) + '" y="' + (n.y + 30).toFixed(1) +
-      '" text-anchor="middle" font-size="9" fill="#8aa0bd">slot ' + (s >= 0 ? s + 1 : '—') + '</text>';
+      '" text-anchor="middle" font-size="9" fill="#8d8375">slot ' + (s >= 0 ? s + 1 : '—') + '</text>';
   });
   svg.innerHTML = edges + dots;
 }
 
 function renderChart(canvas, history) {
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  ctx.fillStyle = '#0e1420';
+  ctx.fillStyle = '#fffefb';
   ctx.fillRect(0, 0, W, H);
   if (!history.length) return;
   const maxY = Math.max.apply(null, history.map((h) => h.best)) || 1;
   const n = history.length;
-  ctx.strokeStyle = '#1e2a3d';
+  ctx.strokeStyle = '#eadfd0';
   ctx.lineWidth = 1;
   for (let g = 0; g <= 4; g++) {
     const y = 20 + (H - 50) * (g / 4);
@@ -130,7 +134,7 @@ function renderChart(canvas, history) {
     ctx.moveTo(40, y);
     ctx.lineTo(W - 10, y);
     ctx.stroke();
-    ctx.fillStyle = '#5c718c';
+    ctx.fillStyle = '#8d8375';
     ctx.font = '10px Consolas';
     ctx.fillText((maxY * (1 - g / 4)).toFixed(1), 6, y + 3);
   }
@@ -148,15 +152,16 @@ function renderChart(canvas, history) {
     });
     ctx.stroke();
   };
-  draw('mean', '#5c718c');
-  draw('best', '#4da3ff');
-  ctx.fillStyle = '#5c718c';
+  draw('mean', '#d4a9b4');
+  draw('best', '#5b7fb9');
+  ctx.fillStyle = '#8d8375';
   ctx.fillText('mean fitness', W - 120, 16);
-  ctx.fillStyle = '#4da3ff';
+  ctx.fillStyle = '#46669c';
   ctx.fillText('best fitness', W - 120, 30);
 }
 
 function renderTimetable(container, courses, slotOf, numSlots) {
+  if (!container) return;
   const slots = [];
   for (let s = 0; s < numSlots; s++) slots.push([]);
   courses.forEach((c) => {
@@ -183,6 +188,7 @@ function checkHtml(label, val, cls) {
 }
 
 function renderFinalChecks(conflicts, slotOf, numSlots) {
+  if (!document.getElementById('finalChecks')) return;
   let unassigned = 0;
   slotOf.forEach((s) => { if (s < 0) unassigned++; });
   const used = new Set(slotOf.filter((s) => s >= 0)).size;
@@ -193,6 +199,7 @@ function renderFinalChecks(conflicts, slotOf, numSlots) {
 }
 
 function renderAIStats(aiResult, conflictsFinal, greedyUnassigned) {
+  if (!document.getElementById('aiStats')) return;
   document.getElementById('aiStats').innerHTML =
     stat('Best penalty', aiResult.bestScore.toFixed(1)) +
     stat('Generations / iters', aiResult.history.length) +

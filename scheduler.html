@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Scheduler — Exam Scheduler</title>
+<link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="index.html">Exam Scheduler<span class="dot">.</span></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="algorithms.html">Algorithms</a>
+      <a href="scheduler.html" class="current">Live Scheduler</a>
+      <a href="reference.html">Reference</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-head">
+  <h1>The live scheduler</h1>
+  <p class="sub">Build the graph, prioritize, select, color — then let the AI layer polish it to zero conflicts. Every stage lights up as it runs.</p>
+</section>
+
+<main class="section" style="margin-top:18px;">
+
+  <div class="controls">
+    <label>Courses <input type="number" id="inCourses" value="60" min="10" max="400" step="10"></label>
+    <label>Students <input type="number" id="inStudents" value="800" min="100" max="8000" step="100"></label>
+    <label>Slots <input type="number" id="inSlots" value="12" min="4" max="30"></label>
+    <label>Seed <input type="number" id="inSeed" value="20260731" min="1" max="999999999"></label>
+    <label>AI refiner
+      <select id="inRefiner">
+        <option value="ga" selected>Genetic Algorithm</option>
+        <option value="sa">Simulated Annealing</option>
+      </select>
+    </label>
+    <button id="btnRun">▶ Run the full pipeline</button>
+  </div>
+
+  <div class="pipeline">
+    <div class="stage" id="stage1">
+      <div class="stage-num">1</div>
+      <div>
+        <h3>Conflict storage</h3>
+        <p>Hash tables sized by Miller–Rabin primes</p>
+        <div class="stage-metric" id="m1">—</div>
+      </div>
+    </div>
+    <div class="stage" id="stage2">
+      <div class="stage-num">2</div>
+      <div>
+        <h3>Prioritize</h3>
+        <p>Randomized QuickSort by conflict-degree</p>
+        <div class="stage-metric" id="m2">—</div>
+      </div>
+    </div>
+    <div class="stage" id="stage3">
+      <div class="stage-num">3</div>
+      <div>
+        <h3>Select top-K</h3>
+        <p>QuickSelect · expected O(n)</p>
+        <div class="stage-metric" id="m3">—</div>
+      </div>
+    </div>
+    <div class="stage" id="stage4">
+      <div class="stage-num">4</div>
+      <div>
+        <h3>AI refinement</h3>
+        <p>GA / SA minimizes conflict penalty</p>
+        <div class="stage-metric" id="m4">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>AI refinement — <span id="refinerName">Genetic Algorithm</span></h2>
+    <div class="ai-wrap">
+      <div class="ai-left">
+        <div class="stat-row" id="aiStats"></div>
+        <canvas id="convChart" width="560" height="240"></canvas>
+        <p class="caption">Fitness (conflict penalty) per generation — lower is better, 0 = zero-conflict timetable.</p>
+      </div>
+      <div class="ai-right">
+        <h4>Result</h4>
+        <div id="finalChecks"></div>
+        <div class="log" id="aiLog"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Final timetable</h2>
+    <div id="timetable" class="timetable"></div>
+    <p class="caption">Each column is one exam slot; colors group courses that may share a room. No column contains two courses connected in the conflict graph.</p>
+  </div>
+
+</main>
+
+<footer>
+  Want the theory behind these numbers? <a href="algorithms.html">Algorithms</a> ·
+  Complexities and citations in the <a href="reference.html">Reference</a>.
+</footer>
+
+<script src="js/rng.js?v=3"></script>
+<script src="js/primality.js?v=3"></script>
+<script src="js/hashtable.js?v=3"></script>
+<script src="js/quicksort.js?v=3"></script>
+<script src="js/quickselect.js?v=3"></script>
+<script src="js/coloring.js?v=3"></script>
+<script src="js/scheduler.js?v=3"></script>
+<script src="js/render.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
+</body>
+</html>
