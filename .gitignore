@@ -1,0 +1,6 @@
+# Local tooling state
+.freebuff/
+
+# OS junk
+Thumbs.db
+.DS_Store

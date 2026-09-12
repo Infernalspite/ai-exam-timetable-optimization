@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Based Exam Timetable Optimization — Randomized Algorithms in Action</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>AI-Based Exam Timetable Optimization</h1>
+      <p class="subtitle">Randomized Algorithms (Unit V) powering a real scheduler — Miller–Rabin · Randomized QuickSort · QuickSelect · GA / Simulated Annealing</p>
+    </div>
+    <div class="header-badge">DAA · Unit V<br>Graph Coloring = NP-Hard</div>
+  </div>
+</header>
+
+<section class="controls">
+  <label>Courses <input type="number" id="inCourses" value="60" min="10" max="400" step="10"></label>
+  <label>Students <input type="number" id="inStudents" value="800" min="100" max="8000" step="100"></label>
+  <label>Slots <input type="number" id="inSlots" value="12" min="4" max="30"></label>
+  <label>Seed <input type="number" id="inSeed" value="20260731" min="1" max="999999999"></label>
+  <label class="checkbox"><input type="checkbox" id="inAdversarial"> Adversarial input (pre-sorted by course code)</label>
+  <label>AI refiner
+    <select id="inRefiner">
+      <option value="ga" selected>Genetic Algorithm</option>
+      <option value="sa">Simulated Annealing</option>
+    </select>
+  </label>
+  <button id="btnRun">▶ Run the full pipeline</button>
+</section>
+
+<section class="pipeline">
+  <div class="stage" id="stage1">
+    <div class="stage-num">1</div>
+    <div class="stage-body">
+      <h3>Conflict storage</h3>
+      <p>Hash tables sized by <b>Miller–Rabin</b> primes</p>
+      <div class="stage-metric" id="m1">—</div>
+    </div>
+  </div>
+  <div class="stage" id="stage2">
+    <div class="stage-num">2</div>
+    <div class="stage-body">
+      <h3>Prioritize</h3>
+      <p><b>Randomized QuickSort</b> by conflict-degree</p>
+      <div class="stage-metric" id="m2">—</div>
+    </div>
+  </div>
+  <div class="stage" id="stage3">
+    <div class="stage-num">3</div>
+    <div class="stage-body">
+      <h3>Select top-K</h3>
+      <p><b>QuickSelect</b> · expected O(n)</p>
+      <div class="stage-metric" id="m3">—</div>
+    </div>
+  </div>
+  <div class="stage" id="stage4">
+    <div class="stage-num">4</div>
+    <div class="stage-body">
+      <h3>AI refinement</h3>
+      <p><b>GA / SA</b> minimizes conflict penalty</p>
+      <div class="stage-metric" id="m4">—</div>
+    </div>
+  </div>
+</section>
+
+<main>
+
+<section class="panel" id="secGraph">
+  <h2>Conflict graph <span class="hint">courses = vertices · shared students = edges · slots = colors (NP-Hard graph coloring)</span></h2>
+  <div class="graph-wrap">
+    <svg id="graphSvg" viewBox="0 0 900 380" role="img" aria-label="Course conflict graph"></svg>
+    <p class="caption" id="graphCaption">Run the pipeline to build the conflict graph (showing the top-K most constrained courses).</p>
+  </div>
+</section>
+
+<section class="panel" id="secAlgos">
+  <h2>The randomized algorithms at work</h2>
+  <div class="algo-grid">
+
+    <div class="algo-card" id="cardMR">
+      <h3>① Randomized Primality Testing — Miller–Rabin</h3>
+      <p class="algo-desc">Hash table size must be <b>prime</b> to spread keys evenly. Miller–Rabin tests random witnesses: fail one → definitely composite; pass all → prime with error ≤ 4<sup>−k</sup>.</p>
+      <div class="stat-row" id="mrStats"></div>
+      <div class="log" id="mrLog"></div>
+    </div>
+
+    <div class="algo-card" id="cardQS">
+      <h3>② Randomized QuickSort — by conflict-degree</h3>
+      <p class="algo-desc">Random pivot → partition → recurse. Expected <b>O(n log n)</b> on <i>any</i> input order — the adversarial toggle feeds pre-sorted data that would break a fixed-pivot Quicksort with O(n²).</p>
+      <div class="stat-row" id="qsStats"></div>
+      <div class="log" id="qsTrace"></div>
+    </div>
+
+    <div class="algo-card" id="cardQSel">
+      <h3>③ Randomized Select — the K most conflict-heavy courses</h3>
+      <p class="algo-desc">Need the Kth smallest without a full sort? QuickSelect partitions like QuickSort but recurses into <i>one side only</i>: expected <b>O(n)</b> vs O(n log n) for sorting everything.</p>
+      <div class="stat-row" id="qselStats"></div>
+      <div class="log" id="qselTrace"></div>
+    </div>
+
+  </div>
+</section>
+
+<section class="panel" id="secAI">
+  <h2>AI refinement — <span id="refinerName">Genetic Algorithm</span></h2>
+  <p class="algo-desc" id="aiDesc">Population of timetables → fitness = conflict penalty → selection → crossover → mutation. The fast randomized subroutines above are what let every generation evaluate candidates quickly.</p>
+  <div class="ai-wrap">
+    <div class="ai-left">
+      <div class="stat-row" id="aiStats"></div>
+      <canvas id="convChart" width="560" height="240"></canvas>
+      <p class="caption">Fitness (conflict penalty) per generation — lower is better, 0 = zero-conflict timetable.</p>
+    </div>
+    <div class="ai-right">
+      <h4>Result</h4>
+      <div id="finalChecks"></div>
+      <div class="log" id="aiLog"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="secTimetable">
+  <h2>Final timetable</h2>
+  <div id="timetable" class="timetable"></div>
+</section>
+
+<section class="panel" id="secComplexity">
+  <h2>Unit V — complexity summary (topic 10)</h2>
+  <table class="cx-table">
+    <thead>
+      <tr><th>Randomized algorithm</th><th>Role in this scheduler</th><th>Best</th><th>Average (expected)</th><th>Worst</th><th>Reliability</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Randomized QuickSort</td>
+        <td>Sorts courses by conflict-degree so constrained courses are placed first</td>
+        <td>Ω(n log n)</td><td class="good">O(n log n)</td><td>O(n²) — probability → 0</td>
+        <td>Input-order independent in expectation</td>
+      </tr>
+      <tr>
+        <td>Randomized Select (QuickSelect)</td>
+        <td>“Top-K most constrained courses”, “K least-loaded slots” without full sort</td>
+        <td>Ω(n)</td><td class="good">O(n)</td><td>O(n²) — probability → 0</td>
+        <td>Beats full sort whenever K ≪ n</td>
+      </tr>
+      <tr>
+        <td>Miller–Rabin primality test</td>
+        <td>Verifies prime hash-table sizes for O(1) conflict lookups</td>
+        <td colspan="2" class="good">O(k · log³ n) — polynomial</td>
+        <td>Deterministic factoring: exponential</td>
+        <td>One-sided error ≤ 4<sup>−k</sup> (false “prime” only)</td>
+      </tr>
+      <tr>
+        <td>Greedy coloring <span class="hint">(deterministic harness)</span></td>
+        <td>First-fit initial timetable on the QuickSort order</td>
+        <td colspan="3">O(V + E) per pass</td>
+        <td>Guaranteed conflict-free <i>if colors suffice</i></td>
+      </tr>
+      <tr>
+        <td>Genetic Algorithm / Simulated Annealing <span class="hint">(AI layer)</span></td>
+        <td>Repairs tight instances: unassigned courses, residual conflicts, load balance</td>
+        <td colspan="3">Empirical — population × generations / iterations</td>
+        <td>Anytime: better schedules over time</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  Built with the Unit V randomized algorithm toolkit — Miller–Rabin · Randomized QuickSort · Randomized Select — wrapped in an AI search layer. No libraries, no build step: open <code>index.html</code> and press Run.
+</footer>
+
+</main>
+
+<script src="js/rng.js"></script>
+<script src="js/primality.js"></script>
+<script src="js/hashtable.js"></script>
+<script src="js/quicksort.js"></script>
+<script src="js/quickselect.js"></script>
+<script src="js/coloring.js"></script>
+<script src="js/scheduler.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

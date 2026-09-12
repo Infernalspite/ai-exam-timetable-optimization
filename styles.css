@@ -1,0 +1,153 @@
+/* styles.css — dark presentation theme for the exam-timetable optimizer */
+:root {
+  --bg: #0b0f17;
+  --panel: #121826;
+  --panel2: #0e1420;
+  --border: #1e2a3d;
+  --text: #dce6f5;
+  --muted: #8aa0bd;
+  --accent: #4da3ff;
+  --good: #43d17c;
+  --bad: #ff5d73;
+  --warn: #ffb454;
+  --stage: #16203280;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  background: linear-gradient(135deg, #0d1526 0%, #101d36 60%, #14213d 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 28px;
+}
+.header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+h1 { margin: 0; font-size: 1.45rem; letter-spacing: 0.3px; }
+.subtitle { margin: 6px 0 0; color: var(--muted); font-size: 0.88rem; }
+.header-badge {
+  text-align: center; font-size: 0.72rem; color: var(--accent);
+  border: 1px solid #2a3c5c; border-radius: 8px; padding: 8px 12px; white-space: nowrap;
+}
+
+/* ---- controls ---- */
+.controls {
+  max-width: 1200px; margin: 14px auto 0; padding: 12px 16px;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
+}
+.controls label { display: flex; flex-direction: column; font-size: 0.75rem; color: var(--muted); gap: 4px; }
+.controls label.checkbox { flex-direction: row; align-items: center; font-size: 0.8rem; color: var(--text); }
+.controls input[type="number"], .controls select {
+  background: #0a0f1a; color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 8px; width: 90px; font-size: 0.85rem;
+}
+.controls select { width: auto; }
+#btnRun {
+  margin-left: auto; background: var(--accent); color: #04101f; font-weight: 700;
+  border: 0; border-radius: 8px; padding: 10px 18px; font-size: 0.9rem; cursor: pointer;
+}
+#btnRun:hover { filter: brightness(1.1); }
+#btnRun:disabled { opacity: 0.5; cursor: wait; }
+
+/* ---- pipeline strip ---- */
+.pipeline {
+  max-width: 1200px; margin: 14px auto 0; padding: 0 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.stage {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--stage); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px; opacity: 0.45; transition: opacity 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.stage.active { opacity: 1; border-color: var(--accent); box-shadow: 0 0 14px #4da3ff33; }
+.stage.done { opacity: 1; }
+.stage-num {
+  width: 26px; height: 26px; border-radius: 50%; background: #223350;
+  color: var(--accent); font-weight: 700; display: flex; align-items: center; justify-content: center;
+  flex: 0 0 26px;
+}
+.stage.done .stage-num { background: var(--good); color: #05230f; }
+.stage h3 { margin: 0 0 2px; font-size: 0.85rem; }
+.stage p { margin: 0 0 6px; font-size: 0.72rem; color: var(--muted); }
+.stage-metric { font-size: 0.72rem; color: var(--accent); font-family: Consolas, monospace; min-height: 1em; }
+
+/* ---- panels ---- */
+main { max-width: 1200px; margin: 0 auto; padding: 6px 0 40px; }
+.panel {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 20px; margin-top: 16px;
+}
+.panel h2 { margin: 0 0 12px; font-size: 1.05rem; }
+.panel h2 .hint, .hint { font-weight: 400; font-size: 0.75rem; color: var(--muted); }
+
+.graph-wrap svg { width: 100%; height: auto; display: block; background: var(--panel2); border-radius: 8px; }
+.caption { color: var(--muted); font-size: 0.75rem; margin: 6px 0 0; }
+
+/* ---- algorithm cards ---- */
+.algo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.algo-card {
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+}
+.algo-card h3 { margin: 0 0 8px; font-size: 0.92rem; color: var(--accent); }
+.algo-desc { font-size: 0.8rem; color: var(--muted); margin: 0 0 10px; line-height: 1.45; }
+.stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.stat {
+  background: #0a0f1a; border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 10px; font-size: 0.72rem; color: var(--muted); min-width: 90px;
+}
+.stat b { display: block; color: var(--text); font-size: 0.95rem; font-family: Consolas, monospace; }
+
+.log {
+  background: #070b12; border: 1px solid var(--border); border-radius: 8px;
+  font-family: Consolas, "Courier New", monospace; font-size: 0.72rem;
+  color: #9fb4d0; padding: 10px 12px; max-height: 220px; overflow-y: auto; line-height: 1.5;
+}
+.log .k { color: var(--accent); }
+.log .ok { color: var(--good); }
+.log .no { color: var(--bad); }
+.log .dim { color: #5c718c; }
+
+/* ---- AI section ---- */
+.ai-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+.ai-left canvas { width: 100%; height: auto; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; }
+#finalChecks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.check {
+  display: flex; justify-content: space-between; align-items: center;
+  background: #0a0f1a; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.8rem;
+}
+.check .val { font-family: Consolas, monospace; font-weight: 700; }
+.check.pass .val { color: var(--good); }
+.check.fail .val { color: var(--bad); }
+h4 { margin: 0 0 8px; font-size: 0.85rem; color: var(--accent); }
+
+/* ---- timetable ---- */
+.timetable { overflow-x: auto; }
+table.tt { border-collapse: collapse; width: 100%; font-size: 0.72rem; }
+table.tt th, table.tt td {
+  border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top;
+}
+table.tt th { background: #0a0f1a; color: var(--muted); font-weight: 600; }
+.tt-course { font-family: Consolas, monospace; color: var(--text); white-space: nowrap; }
+.tt-conflict { color: var(--bad); font-weight: 700; }
+.tt-free { color: #5c718c; font-style: italic; }
+
+/* ---- complexity table ---- */
+.cx-table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+.cx-table th, .cx-table td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+.cx-table th { background: #0a0f1a; color: var(--muted); }
+.cx-table td.good { color: var(--good); font-weight: 600; }
+.cx-table td .hint { display: block; }
+
+footer { max-width: 1200px; margin: 20px auto 30px; color: var(--muted); font-size: 0.75rem; text-align: center; }
+footer code { color: var(--accent); }
+
+@media (max-width: 900px) {
+  .pipeline { grid-template-columns: repeat(2, 1fr); }
+  .ai-wrap { grid-template-columns: 1fr; }
+}
