@@ -310,6 +310,57 @@ footer {
 }
 footer a { color: var(--blue-deep); }
 
+/* ---------- page-load fade-in (subtle, staggered) ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero, .page-head,
+.panel, .story {
+  animation: rise 0.55s ease-out both;
+}
+
+.steps .step-card:nth-child(1) { animation: rise 0.55s ease-out both; }
+.steps .step-card:nth-child(2) { animation: rise 0.55s ease-out both 0.07s; }
+.steps .step-card:nth-child(3) { animation: rise 0.55s ease-out both 0.14s; }
+.steps .step-card:nth-child(4) { animation: rise 0.55s ease-out both 0.21s; }
+.feature-row .feature:nth-child(1) { animation: rise 0.55s ease-out both; }
+.feature-row .feature:nth-child(2) { animation: rise 0.55s ease-out both 0.08s; }
+.feature-row .feature:nth-child(3) { animation: rise 0.55s ease-out both 0.16s; }
+.algo-card { animation: rise 0.55s ease-out both; }
+.algo-grid .algo-card:nth-child(2) { animation-delay: 0.07s; }
+.algo-grid .algo-card:nth-child(3) { animation-delay: 0.14s; }
+
+/* ---------- hover micro-interactions ---------- */
+.step-card, .feature, .algo-card, .hero-card, .story {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.step-card:hover, .feature:hover, .algo-card:hover, .story:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--line-2);
+}
+.hero-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat { transition: border-color 0.15s ease, transform 0.15s ease; }
+.stat:hover { border-color: var(--blue); transform: translateY(-1px); }
+.check { transition: transform 0.15s ease; }
+.check:hover { transform: translateX(2px); }
+.tt-course { transition: background 0.15s ease, color 0.15s ease; }
+.tt-course:hover { background: var(--blue-soft); color: var(--blue-deep); }
+.demo-list li { transition: background 0.15s ease; }
+.demo-list li:hover { background: #fdf8f0; }
+.topnav .brand { transition: opacity 0.15s ease; }
+.topnav .brand:hover { opacity: 0.75; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; }
   .steps { grid-template-columns: repeat(2, 1fr); }
