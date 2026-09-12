@@ -9,7 +9,8 @@ No frameworks. No build step. No dependencies — open `index.html` and press **
 
 ## Collaborator
 
-- **Taarunya Giriraj** — [taarunyagiriraj.aids2025@citchennai.net](mailto:taarunyagiriraj.aids2025@citchennai.net)
+- **Taarunya Giriraj** — GitHub: [@taarunyeahhh](https://github.com/taarunyeahhh) ·
+  [taarunyagiriraj.aids2025@citchennai.net](mailto:taarunyagiriraj.aids2025@citchennai.net)
   (AIDS 2025, Chennai Institute of Technology)
 
 ## Why this topic
